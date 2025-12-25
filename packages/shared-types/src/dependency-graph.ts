@@ -7,7 +7,7 @@ import { ExpressionEngine } from './expression';
 
 export interface FieldNode {
   name: string;
-  expression?: string;
+  expression: string | undefined;
   dependencies: string[];
 }
 

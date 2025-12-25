@@ -129,8 +129,47 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   name: 'name',
   password: 'password',
-  roles: 'roles',
+  departmentId: 'departmentId',
   tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DepartmentScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  parentId: 'parentId',
+  path: 'path',
+  level: 'level',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RoleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  description: 'description',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserRoleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  roleId: 'roleId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PolicyScalarFieldEnum = {
+  id: 'id',
+  roleId: 'roleId',
+  effect: 'effect',
+  resource: 'resource',
+  actions: 'actions',
+  condition: 'condition',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -173,6 +212,10 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
+  Department: 'Department',
+  Role: 'Role',
+  UserRole: 'UserRole',
+  Policy: 'Policy',
   App: 'App',
   HiddenDanger: 'HiddenDanger'
 };

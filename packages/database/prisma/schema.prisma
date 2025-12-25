@@ -16,20 +16,77 @@ model Tenant {
   updatedAt     DateTime        @updatedAt
   users         User[]
   apps          App[]
+  departments   Department[] @relation("TenantDepartments")
+  roles         Role[] @relation("TenantRoles")
   hiddenDangers HiddenDanger[]  // 反向关系
 }
 
 model User {
   id            String          @id @default(uuid())
   email         String          @unique
-  name          String?
+  name          String
   password      String          // Hashed
-  roles         String          // JSON string for RBAC roles
+  departmentId  String?
+  department    Department?     @relation(fields: [departmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  userRoles     UserRole[]
   tenantId      String
   tenant        Tenant          @relation(fields: [tenantId], references: [id])
   hiddenDangers HiddenDanger[]  // 反向关系
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+}
+
+model Department {
+  id          String       @id @default(uuid())
+  name        String
+  parentId    String?
+  parent      Department?  @relation("DeptTree", fields: [parentId], references: [id])
+  children    Department[] @relation("DeptTree")
+  path        String       // 冗余路径字段，如 "/1/5/12/"
+  level       Int          // 层级，根节点为 0
+  users       User[]
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], name: "TenantDepartments")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([path])  // 加速子树查询
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String       // 角色名称，如 "财务主管"
+  code        String       @unique  // 角色编码，如 "finance_manager"
+  description String?
+  policies    Policy[]
+  users       UserRole[]
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], name: "TenantRoles")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roleId])
+}
+
+model Policy {
+  id        String   @id @default(uuid())
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  effect    String   // "ALLOW" | "DENY"
+  resource  String   // 资源类型，如 "Order", "*"
+  actions   String   // 允许的操作，如 "read,update" (逗号分隔)
+  condition String?  // 条件表达式，JSON字符串格式
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model App {

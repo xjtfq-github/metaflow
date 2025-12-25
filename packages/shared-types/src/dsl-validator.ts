@@ -1,7 +1,7 @@
 import Ajv, { type JSONSchemaType } from 'ajv';
 import type { ErrorObject } from 'ajv';
 import localize from 'ajv-i18n';
-import type { LogicDSL } from './logic';
+import type { ExecutionContext, ExecutionResult, Pipeline } from './logic';
 import type { ModelDSL } from './model';
 import type { PageDSL } from './page';
 import type { WorkflowDSL } from './workflow';
@@ -11,6 +11,14 @@ export type DSLKind = 'model' | 'page' | 'logic' | 'workflow';
 export type DSLValidationResult =
   | { valid: true }
   | { valid: false; errors: string[]; rawErrors?: ErrorObject[] };
+
+// 临时定义LogicDSL类型，待完善
+interface LogicDSL {
+  id: string;
+  version: string;
+  name: string;
+  events: Record<string, any>;
+}
 
 export class DSLValidator {
   private readonly ajv: Ajv;
@@ -154,6 +162,7 @@ const workflowSchema: JSONSchemaType<WorkflowDSL> = {
     id: { type: 'string' },
     version: { type: 'string' },
     name: { type: 'string' },
+    description: { type: 'string', nullable: true },
     nodes: { type: 'array', items: { type: 'object' } as any },
     edges: { type: 'array', items: { type: 'object' } as any },
   },

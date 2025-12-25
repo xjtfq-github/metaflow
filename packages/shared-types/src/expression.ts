@@ -3,10 +3,10 @@
  * 安全的表达式求值器，支持数学运算、逻辑判断、函数调用
  */
 
-import jsep from 'jsep';
+import * as jsep from 'jsep';
 import { create, all } from 'mathjs';
 
-const math = create(all);
+const math = create(all as any);
 
 /**
  * 表达式引擎
