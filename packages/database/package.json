@@ -1,0 +1,27 @@
+{
+  "name": "@metaflow/database",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "generate": "prisma generate",
+    "build": "pnpm generate && tsc && cp -r src/generated dist/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.16.1",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "prisma": "^5.19.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@metaflow/logic-engine": "workspace:*",
+    "@prisma/adapter-libsql": "^7.2.0",
+    "@prisma/client": "^5.19.1",
+    "better-sqlite3": "^12.5.0"
+  }
+}

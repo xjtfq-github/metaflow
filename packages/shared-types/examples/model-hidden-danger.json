@@ -1,0 +1,114 @@
+{
+  "id": "hidden_danger_v1",
+  "version": "1.0.0",
+  "entityName": "HiddenDanger",
+  "displayName": "隐患单",
+  "description": "现场隐患排查上报模块",
+  "timestamps": true,
+  "fields": [
+    {
+      "key": "title",
+      "label": "隐患标题",
+      "type": "string",
+      "required": true,
+      "validation": {
+        "required": true,
+        "min": 5,
+        "max": 100
+      }
+    },
+    {
+      "key": "description",
+      "label": "隐患描述",
+      "type": "string",
+      "required": true
+    },
+    {
+      "key": "level",
+      "label": "隐患等级",
+      "type": "enum",
+      "required": true,
+      "options": [
+        { "label": "一般隐患", "value": "normal" },
+        { "label": "重大隐患", "value": "critical" }
+      ]
+    },
+    {
+      "key": "status",
+      "label": "处理状态",
+      "type": "enum",
+      "required": true,
+      "defaultValue": "draft",
+      "options": [
+        { "label": "草稿", "value": "draft" },
+        { "label": "待整改", "value": "pending" },
+        { "label": "整改中", "value": "fixing" },
+        { "label": "待验收", "value": "verifying" },
+        { "label": "已闭环", "value": "closed" }
+      ]
+    },
+    {
+      "key": "location",
+      "label": "隐患位置",
+      "type": "string",
+      "required": true
+    },
+    {
+      "key": "images",
+      "label": "现场照片",
+      "type": "json",
+      "description": "存储图片 URL 数组"
+    },
+    {
+      "key": "gpsLatitude",
+      "label": "GPS纬度",
+      "type": "number"
+    },
+    {
+      "key": "gpsLongitude",
+      "label": "GPS经度",
+      "type": "number"
+    },
+    {
+      "key": "discoveredAt",
+      "label": "发现时间",
+      "type": "date",
+      "required": true
+    },
+    {
+      "key": "deadline",
+      "label": "整改期限",
+      "type": "date"
+    }
+  ],
+  "relations": [
+    {
+      "type": "belongsTo",
+      "target": "User",
+      "foreignKey": "reporterId",
+      "as": "reporter"
+    },
+    {
+      "type": "belongsTo",
+      "target": "User",
+      "foreignKey": "assigneeId",
+      "as": "assignee"
+    },
+    {
+      "type": "belongsTo",
+      "target": "Tenant",
+      "foreignKey": "tenantId",
+      "as": "tenant"
+    }
+  ],
+  "indexes": [
+    {
+      "fields": ["status", "level"],
+      "unique": false
+    },
+    {
+      "fields": ["reporterId"],
+      "unique": false
+    }
+  ]
+}

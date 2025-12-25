@@ -1,0 +1,40 @@
+{
+  "name": "@metaflow/client",
+  "version": "1.0.0",
+  "description": "MetaFlow Client Runtime & Component Registry",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "keywords": [
+    "low-code",
+    "metaflow",
+    "client"
+  ],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "antd": "^5.0.0",
+    "dayjs": "^1.11.0"
+  },
+  "dependencies": {
+    "@metaflow/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@vitest/ui": "^2.0.0",
+    "jsdom": "^25.0.0",
+    "msw": "^2.0.0"
+  }
+}

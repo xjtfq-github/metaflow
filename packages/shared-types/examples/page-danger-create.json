@@ -1,0 +1,131 @@
+{
+  "id": "page_danger_create_v1",
+  "version": "1.0.0",
+  "name": "隐患上报",
+  "layout": "default",
+  "components": [
+    {
+      "id": "form_main",
+      "type": "Form",
+      "props": {
+        "layout": "vertical",
+        "labelCol": { "span": 24 },
+        "wrapperCol": { "span": 24 }
+      },
+      "children": [
+        {
+          "id": "title_input",
+          "type": "Input",
+          "props": {
+            "label": "隐患标题",
+            "field": "title",
+            "placeholder": "请输入隐患标题",
+            "required": true,
+            "maxLength": 100
+          }
+        },
+        {
+          "id": "description_textarea",
+          "type": "TextArea",
+          "props": {
+            "label": "隐患描述",
+            "field": "description",
+            "placeholder": "请详细描述隐患情况",
+            "required": true,
+            "rows": 4
+          }
+        },
+        {
+          "id": "level_select",
+          "type": "Select",
+          "props": {
+            "label": "隐患等级",
+            "field": "level",
+            "placeholder": "请选择隐患等级",
+            "required": true,
+            "options": [
+              { "label": "一般隐患", "value": "normal" },
+              { "label": "重大隐患", "value": "critical" }
+            ]
+          }
+        },
+        {
+          "id": "location_input",
+          "type": "Input",
+          "props": {
+            "label": "隐患位置",
+            "field": "location",
+            "placeholder": "请输入隐患发现位置",
+            "required": true
+          }
+        },
+        {
+          "id": "images_upload",
+          "type": "ImageUpload",
+          "props": {
+            "label": "现场照片",
+            "field": "images",
+            "maxCount": 5,
+            "accept": "image/*"
+          }
+        },
+        {
+          "id": "gps_capture",
+          "type": "GPSCapture",
+          "props": {
+            "label": "GPS定位",
+            "latitudeField": "gpsLatitude",
+            "longitudeField": "gpsLongitude",
+            "autoCapture": true
+          }
+        },
+        {
+          "id": "discovered_date",
+          "type": "DatePicker",
+          "props": {
+            "label": "发现时间",
+            "field": "discoveredAt",
+            "required": true,
+            "showTime": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "action_bar",
+      "type": "Space",
+      "props": {
+        "size": "middle",
+        "style": { "marginTop": 16 }
+      },
+      "children": [
+        {
+          "id": "submit_btn",
+          "type": "Button",
+          "props": {
+            "type": "primary",
+            "text": "提交上报"
+          },
+          "events": {
+            "onClick": "handleSubmit"
+          }
+        },
+        {
+          "id": "cancel_btn",
+          "type": "Button",
+          "props": {
+            "text": "取消"
+          },
+          "events": {
+            "onClick": "handleCancel"
+          }
+        }
+      ]
+    }
+  ],
+  "state": {
+    "formData": {},
+    "loading": false,
+    "errors": {}
+  }
+}

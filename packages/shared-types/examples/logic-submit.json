@@ -1,0 +1,96 @@
+{
+  "id": "logic_danger_submit_v1",
+  "version": "1.0.0",
+  "name": "隐患上报提交逻辑",
+  "events": {
+    "handleSubmit": [
+      {
+        "action": "validateForm",
+        "params": {
+          "formId": "form_main"
+        },
+        "then": [
+          {
+            "action": "setState",
+            "params": {
+              "loading": true
+            }
+          },
+          {
+            "action": "captureGPS",
+            "params": {
+              "latitudeField": "gpsLatitude",
+              "longitudeField": "gpsLongitude"
+            },
+            "then": [
+              {
+                "action": "submitData",
+                "params": {
+                  "method": "POST",
+                  "endpoint": "/api/data/HiddenDanger",
+                  "data": "formData"
+                },
+                "then": [
+                  {
+                    "action": "showMessage",
+                    "params": {
+                      "type": "success",
+                      "message": "隐患上报成功"
+                    }
+                  },
+                  {
+                    "action": "navigate",
+                    "params": {
+                      "to": "/dangers/list"
+                    }
+                  }
+                ],
+                "catch": [
+                  {
+                    "action": "setState",
+                    "params": {
+                      "loading": false
+                    }
+                  },
+                  {
+                    "action": "showMessage",
+                    "params": {
+                      "type": "error",
+                      "message": "提交失败，请重试"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "catch": [
+          {
+            "action": "showMessage",
+            "params": {
+              "type": "warning",
+              "message": "请填写必填项"
+            }
+          }
+        ]
+      }
+    ],
+    "handleCancel": [
+      {
+        "action": "confirm",
+        "params": {
+          "title": "确认取消",
+          "message": "确定要取消上报吗？未保存的数据将丢失。"
+        },
+        "then": [
+          {
+            "action": "navigate",
+            "params": {
+              "to": "/dangers/list"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

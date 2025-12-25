@@ -1,0 +1,22 @@
+{
+  "name": "@metaflow/validation",
+  "version": "1.0.0",
+  "description": "MetaFlow Schema Validation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["low-code", "validation", "schema"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@metaflow/shared-types": "workspace:*",
+    "zod": "^3.24.1"
+  }
+}

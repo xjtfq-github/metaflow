@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": false,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "src/**/*.test.ts", 
+    "src/**/*.test.tsx", 
+    "src/__tests__", 
+    "src/**/_ _tests__",
+    "src/utils/httpClient.ts",
+    "src/components/LocationPicker.tsx",
+    "src/components/SignaturePad.tsx",
+    "src/components/UserPicker.tsx",
+    "src/components/AntdInputAdapter.tsx",
+    "src/components/AntdSelectAdapter.tsx",
+    "src/components/AntdDatePickerAdapter.tsx",
+    "src/components/Grid.tsx",
+    "src/components/Table.tsx",
+    "src/components/Select.tsx"
+  ]
+}
