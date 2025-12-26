@@ -186,6 +186,45 @@ exports.Prisma.AppScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AppDraftScalarFieldEnum = {
+  id: 'id',
+  appId: 'appId',
+  snapshot: 'snapshot',
+  updatedAt: 'updatedAt',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AppVersionScalarFieldEnum = {
+  id: 'id',
+  appId: 'appId',
+  version: 'version',
+  status: 'status',
+  snapshot: 'snapshot',
+  changelog: 'changelog',
+  publishedBy: 'publishedBy',
+  publishedAt: 'publishedAt',
+  archivedAt: 'archivedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.DeploymentScalarFieldEnum = {
+  id: 'id',
+  appId: 'appId',
+  versionId: 'versionId',
+  environment: 'environment',
+  status: 'status',
+  deployedBy: 'deployedBy',
+  deployedAt: 'deployedAt',
+  canaryEnabled: 'canaryEnabled',
+  canaryPercent: 'canaryPercent',
+  canaryWhitelist: 'canaryWhitelist',
+  rollbackAt: 'rollbackAt',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.HiddenDangerScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -194,6 +233,163 @@ exports.Prisma.HiddenDangerScalarFieldEnum = {
   status: 'status',
   reporterId: 'reporterId',
   extraData: 'extraData',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AssetScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  assetCode: 'assetCode',
+  name: 'name',
+  category: 'category',
+  manufacturer: 'manufacturer',
+  model: 'model',
+  serialNumber: 'serialNumber',
+  location: 'location',
+  department: 'department',
+  status: 'status',
+  healthScore: 'healthScore',
+  purchaseDate: 'purchaseDate',
+  warrantyExpiry: 'warrantyExpiry',
+  lastMaintenance: 'lastMaintenance',
+  nextMaintenance: 'nextMaintenance',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkOrderScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  orderNo: 'orderNo',
+  title: 'title',
+  description: 'description',
+  type: 'type',
+  priority: 'priority',
+  status: 'status',
+  assetId: 'assetId',
+  assigneeId: 'assigneeId',
+  scheduledAt: 'scheduledAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  workContent: 'workContent',
+  workResult: 'workResult',
+  usedParts: 'usedParts',
+  workHours: 'workHours',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InspectionPlanScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  frequency: 'frequency',
+  assetId: 'assetId',
+  checkItems: 'checkItems',
+  inspectorId: 'inspectorId',
+  status: 'status',
+  nextInspection: 'nextInspection',
+  lastInspection: 'lastInspection',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InventoryItemScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  partCode: 'partCode',
+  partName: 'partName',
+  specification: 'specification',
+  unit: 'unit',
+  quantity: 'quantity',
+  minQuantity: 'minQuantity',
+  maxQuantity: 'maxQuantity',
+  unitPrice: 'unitPrice',
+  warehouse: 'warehouse',
+  shelf: 'shelf',
+  assetId: 'assetId',
+  supplier: 'supplier',
+  leadTime: 'leadTime',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CustomScriptScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  language: 'language',
+  code: 'code',
+  enabled: 'enabled',
+  trigger: 'trigger',
+  triggerConfig: 'triggerConfig',
+  timeout: 'timeout',
+  memoryLimit: 'memoryLimit',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ScriptExecutionScalarFieldEnum = {
+  id: 'id',
+  scriptId: 'scriptId',
+  status: 'status',
+  input: 'input',
+  output: 'output',
+  logs: 'logs',
+  errors: 'errors',
+  executionTime: 'executionTime',
+  memoryUsed: 'memoryUsed',
+  triggeredBy: 'triggeredBy',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+};
+
+exports.Prisma.WebhookScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  url: 'url',
+  secret: 'secret',
+  method: 'method',
+  headers: 'headers',
+  scriptId: 'scriptId',
+  enabled: 'enabled',
+  lastTriggeredAt: 'lastTriggeredAt',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WebhookRequestScalarFieldEnum = {
+  id: 'id',
+  webhookId: 'webhookId',
+  method: 'method',
+  headers: 'headers',
+  body: 'body',
+  query: 'query',
+  status: 'status',
+  response: 'response',
+  error: 'error',
+  responseTime: 'responseTime',
+  receivedAt: 'receivedAt'
+};
+
+exports.Prisma.ConnectorScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  config: 'config',
+  credentials: 'credentials',
+  enabled: 'enabled',
+  createdBy: 'createdBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -217,7 +413,19 @@ exports.Prisma.ModelName = {
   UserRole: 'UserRole',
   Policy: 'Policy',
   App: 'App',
-  HiddenDanger: 'HiddenDanger'
+  AppDraft: 'AppDraft',
+  AppVersion: 'AppVersion',
+  Deployment: 'Deployment',
+  HiddenDanger: 'HiddenDanger',
+  Asset: 'Asset',
+  WorkOrder: 'WorkOrder',
+  InspectionPlan: 'InspectionPlan',
+  InventoryItem: 'InventoryItem',
+  CustomScript: 'CustomScript',
+  ScriptExecution: 'ScriptExecution',
+  Webhook: 'Webhook',
+  WebhookRequest: 'WebhookRequest',
+  Connector: 'Connector'
 };
 
 /**

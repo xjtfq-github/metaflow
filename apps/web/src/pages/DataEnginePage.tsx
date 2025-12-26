@@ -44,34 +44,39 @@ export const DataEnginePage: React.FC = () => {
   };
 
   return (
-    <Layout style={{ height: '100vh' }}>
-      <Sider width={200} style={{ background: '#fff' }}>
-        <div style={{ height: 64, lineHeight: '64px', paddingLeft: 24, fontWeight: 'bold', fontSize: 16 }}>
-          数据引擎
+    <Layout style={{ height: '100%' }}>
+      <Sider
+        width={280}
+        style={{
+          background: '#fff',
+          borderRight: '1px solid #f0f0f0',
+          overflow: 'auto',
+        }}
+      >
+        <div style={{ padding: '16px', borderBottom: '1px solid #f0f0f0' }}>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>数据引擎</h3>
         </div>
         <Menu
           mode="inline"
           selectedKeys={[selectedKey]}
           onClick={onMenuClick}
-          style={{ height: '100%', borderRight: 0 }}
+          style={{ borderRight: 0 }}
           items={items}
         />
       </Sider>
-      <Layout style={{ padding: '24px' }}>
-        <Content
-          style={{
-            padding: 24,
-            margin: 0,
-            minHeight: 280,
-            background: '#fff',
-            borderRadius: 6,
-          }}
-        >
+      <Content
+        style={{
+          background: '#f5f5f5',
+          padding: 16,
+          overflow: 'auto',
+        }}
+      >
+        <div style={{ background: '#fff', padding: 24, borderRadius: 4, minHeight: '100%' }}>
           {selectedKey === 'models' && <DataModelManager />}
           {selectedKey === 'records' && <div>请选择一个数据模型来管理记录</div>}
           {selectedKey === 'datasource' && <DataSourceConfig />}
-        </Content>
-      </Layout>
+        </div>
+      </Content>
     </Layout>
   );
 };

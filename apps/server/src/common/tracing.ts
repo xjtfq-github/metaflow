@@ -75,6 +75,13 @@ export class Tracer {
   }
 
   /**
+   * 获取完成的 Spans（带限制）
+   */
+  getCompletedSpans(limit?: number): Span[] {
+    return limit ? this.completedSpans.slice(-limit) : this.completedSpans;
+  }
+
+  /**
    * 清空
    */
   clear(): void {
@@ -124,3 +131,4 @@ export function Trace(operationName?: string) {
  * 全局追踪器
  */
 export const globalTracer = new Tracer();
+export const tracer = globalTracer; // 别名

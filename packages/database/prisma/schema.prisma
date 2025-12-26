@@ -19,6 +19,7 @@ model Tenant {
   departments   Department[] @relation("TenantDepartments")
   roles         Role[] @relation("TenantRoles")
   hiddenDangers HiddenDanger[]  // 反向关系
+  assets        Asset[]         // EAM 资产
 }
 
 model User {
@@ -32,6 +33,8 @@ model User {
   tenantId      String
   tenant        Tenant          @relation(fields: [tenantId], references: [id])
   hiddenDangers HiddenDanger[]  // 反向关系
+  workOrders    WorkOrder[]     // EAM 工单
+  inspectionPlans InspectionPlan[] // EAM 巡检计划
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
@@ -90,16 +93,77 @@ model Policy {
 }
 
 model App {
-  id          String   @id @default(uuid())
+  id          String        @id @default(uuid())
   name        String
   description String?
   icon        String?
-  status      String   @default("draft") // draft, published
+  status      String        @default("draft") // draft, published
   tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  tenant      Tenant        @relation(fields: [tenantId], references: [id])
   createdBy   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  drafts      AppDraft[]    // 关联草稿
+  versions    AppVersion[]  // 关联版本
+  deployments Deployment[]  // 关联部署
+}
+
+// 应用草稿
+model AppDraft {
+  id        String   @id @default(uuid())
+  appId     String
+  app       App      @relation(fields: [appId], references: [id], onDelete: Cascade)
+  snapshot  String   // JSON 格式存储快照 {models, pages, workflows, metadata}
+  updatedAt DateTime @updatedAt
+  updatedBy String
+  createdAt DateTime @default(now())
+
+  @@unique([appId]) // 每个应用只有一个草稿
+}
+
+// 应用版本
+model AppVersion {
+  id           String       @id @default(uuid())
+  appId        String
+  app          App          @relation(fields: [appId], references: [id], onDelete: Cascade)
+  version      String       // 语义化版本号，如 "1.0.0"
+  status       String       @default("Published") // Published, Archived
+  snapshot     String       // JSON 格式存储版本快照
+  changelog    String?      // 变更日志
+  publishedBy  String?
+  publishedAt  DateTime     @default(now())
+  archivedAt   DateTime?
+  deployments  Deployment[] // 该版本的部署记录
+  createdAt    DateTime     @default(now())
+
+  @@unique([appId, version]) // 同一应用的版本号唯一
+  @@index([appId, status])
+}
+
+// 部署记录
+model Deployment {
+  id            String     @id @default(uuid())
+  appId         String
+  app           App        @relation(fields: [appId], references: [id], onDelete: Cascade)
+  versionId     String
+  version       AppVersion @relation(fields: [versionId], references: [id])
+  environment   String     // dev, staging, production
+  status        String     @default("deploying") // deploying, active, failed, rollback
+  deployedBy    String
+  deployedAt    DateTime   @default(now())
+  
+  // 灰度发布相关
+  canaryEnabled Boolean    @default(false)
+  canaryPercent Int        @default(0) // 0-100
+  canaryWhitelist String?  // JSON 数组，存储白名单用户ID
+  
+  rollbackAt    DateTime?
+  errorMessage  String?    // 部署失败的错误信息
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([appId, environment])
+  @@index([status])
 }
 
 // 示例: 油田隐患单 (混合存储模式)
@@ -124,4 +188,304 @@ model HiddenDanger {
   
   @@index([status, level])
   @@index([reporterId])
+}
+
+// ========== EAM 设备维保模块 ==========
+
+// 设备资产
+model Asset {
+  id              String            @id @default(uuid())
+  tenantId        String
+  tenant          Tenant            @relation(fields: [tenantId], references: [id])
+  
+  // 基本信息
+  assetCode       String            @unique // 资产编号
+  name            String            // 资产名称
+  category        String            // 设备类别: pump, valve, tank, pipeline
+  manufacturer    String?           // 制造商
+  model           String?           // 型号
+  serialNumber    String?           // 序列号
+  
+  // 位置信息
+  location        String            // 安装位置
+  department      String?           // 所属部门
+  
+  // 状态信息
+  status          String            @default("active") // active, maintenance, retired
+  healthScore     Int               @default(100) // 健康分数 0-100
+  
+  // 时间信息
+  purchaseDate    DateTime?         // 购买日期
+  warrantyExpiry  DateTime?         // 保修到期日
+  lastMaintenance DateTime?         // 上次维保时间
+  nextMaintenance DateTime?         // 下次维保时间
+  
+  // 关联关系
+  workOrders      WorkOrder[]       // 工单
+  inspectionPlans InspectionPlan[]  // 巡检计划
+  inventoryItems  InventoryItem[]   // 备件关联
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  @@index([tenantId, status])
+  @@index([category])
+  @@index([nextMaintenance])
+}
+
+// 工单
+model WorkOrder {
+  id          String    @id @default(uuid())
+  tenantId    String
+  
+  // 工单信息
+  orderNo     String    @unique // 工单编号
+  title       String    // 工单标题
+  description String?   // 工单描述
+  type        String    // 工单类型: preventive(预防性), corrective(纠正性), emergency(紧急)
+  priority    String    @default("medium") // low, medium, high, urgent
+  status      String    @default("pending") // pending, assigned, in_progress, completed, cancelled
+  
+  // 关联设备
+  assetId     String
+  asset       Asset     @relation(fields: [assetId], references: [id])
+  
+  // 人员分配
+  assigneeId  String?
+  assignee    User?     @relation(fields: [assigneeId], references: [id])
+  
+  // 时间计划
+  scheduledAt DateTime  // 计划开始时间
+  startedAt   DateTime? // 实际开始时间
+  completedAt DateTime? // 完成时间
+  
+  // 工作内容
+  workContent String?   // 工作内容
+  workResult  String?   // 工作结果
+  usedParts   String?   // 使用的备件 (JSON 数组)
+  workHours   Float?    // 工时
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([tenantId, status])
+  @@index([assetId])
+  @@index([assigneeId])
+  @@index([scheduledAt])
+}
+
+// 巡检计划
+model InspectionPlan {
+  id          String   @id @default(uuid())
+  tenantId    String
+  
+  // 计划信息
+  name        String   // 计划名称
+  description String?  // 计划描述
+  frequency   String   // 频率: daily, weekly, monthly, quarterly, yearly
+  
+  // 关联设备
+  assetId     String
+  asset       Asset    @relation(fields: [assetId], references: [id])
+  
+  // 巡检内容
+  checkItems  String   // JSON 数组: [{item: "检查项", standard: "标准", method: "方法"}]
+  
+  // 责任人
+  inspectorId String?
+  inspector   User?    @relation(fields: [inspectorId], references: [id])
+  
+  // 计划状态
+  status      String   @default("active") // active, suspended, archived
+  
+  // 时间信息
+  nextInspection DateTime? // 下次巡检时间
+  lastInspection DateTime? // 上次巡检时间
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([tenantId, status])
+  @@index([assetId])
+  @@index([nextInspection])
+}
+
+// 备件库存
+model InventoryItem {
+  id            String   @id @default(uuid())
+  tenantId      String
+  
+  // 备件信息
+  partCode      String   @unique // 备件编号
+  partName      String   // 备件名称
+  specification String?  // 规格型号
+  unit          String   // 单位: 个, 台, 套
+  
+  // 库存信息
+  quantity      Int      @default(0) // 当前库存
+  minQuantity   Int      @default(0) // 最小库存
+  maxQuantity   Int      @default(0) // 最大库存
+  
+  // 价格信息
+  unitPrice     Float?   // 单价
+  
+  // 存储信息
+  warehouse     String?  // 仓库位置
+  shelf         String?  // 货架号
+  
+  // 关联设备
+  assetId       String?
+  asset         Asset?   @relation(fields: [assetId], references: [id])
+  
+  // 供应商信息
+  supplier      String?  // 供应商
+  leadTime      Int?     // 采购周期(天)
+  
+  status        String   @default("active") // active, discontinued
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([tenantId])
+  @@index([quantity]) // 用于库存预警查询
+}
+
+// ========== FaaS / Script 扩展模块 ==========
+
+// 自定义脚本
+model CustomScript {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String   // 脚本名称
+  description String?
+  language    String   @default("javascript") // javascript, typescript
+  code        String   // 脚本代码
+  enabled     Boolean  @default(true)
+  
+  // 触发配置
+  trigger     String?  // 触发类型: manual, webhook, schedule, event
+  triggerConfig String? // JSON 配置: { cron, eventType, ... }
+  
+  // 环境配置
+  timeout     Int      @default(5000) // 超时时间(ms)
+  memoryLimit Int      @default(128)  // 内存限制(MB)
+  
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  executions  ScriptExecution[]
+  webhooks    Webhook[]
+  
+  @@index([tenantId])
+  @@index([enabled])
+}
+
+// 脚本执行记录
+model ScriptExecution {
+  id          String   @id @default(uuid())
+  scriptId    String
+  script      CustomScript @relation(fields: [scriptId], references: [id], onDelete: Cascade)
+  
+  // 执行信息
+  status      String   // pending, running, success, failed, timeout
+  input       String?  // JSON 输入数据
+  output      String?  // JSON 输出数据
+  logs        String?  // 执行日志
+  errors      String?  // 错误信息
+  
+  // 性能指标
+  executionTime Int?   // 执行时间(ms)
+  memoryUsed    Int?   // 内存使用(MB)
+  
+  triggeredBy String?  // 触发者
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  
+  @@index([scriptId])
+  @@index([status])
+  @@index([startedAt])
+}
+
+// Webhook 配置
+model Webhook {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  
+  // Webhook 配置
+  url         String   @unique // Webhook 端点 URL
+  secret      String?  // 签名密钥
+  method      String   @default("POST") // HTTP 方法
+  headers     String?  // JSON 格式的自定义头
+  
+  // 关联脚本
+  scriptId    String?
+  script      CustomScript? @relation(fields: [scriptId], references: [id], onDelete: SetNull)
+  
+  // 状态
+  enabled     Boolean  @default(true)
+  lastTriggeredAt DateTime?
+  
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  requests    WebhookRequest[]
+  
+  @@index([tenantId])
+  @@index([enabled])
+}
+
+// Webhook 请求日志
+model WebhookRequest {
+  id          String   @id @default(uuid())
+  webhookId   String
+  webhook     Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  
+  // 请求信息
+  method      String
+  headers     String   // JSON
+  body        String?  // 请求体
+  query       String?  // 查询参数
+  
+  // 响应信息
+  status      Int?     // HTTP 状态码
+  response    String?  // 响应内容
+  error       String?  // 错误信息
+  
+  // 性能
+  responseTime Int?    // 响应时间(ms)
+  
+  receivedAt  DateTime @default(now())
+  
+  @@index([webhookId])
+  @@index([receivedAt])
+}
+
+// 外部系统连接器
+model Connector {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  
+  // 连接器类型
+  type        String   // http, database, mq, file, custom
+  
+  // 连接配置
+  config      String   // JSON 格式: { baseURL, auth, ... }
+  
+  // 凭证（加密存储）
+  credentials String?  // JSON 格式加密存储
+  
+  enabled     Boolean  @default(true)
+  
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([tenantId])
+  @@index([type])
 }

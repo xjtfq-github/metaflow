@@ -88,7 +88,7 @@ export const Designer: React.FC = () => {
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <Layout style={{ height: '100vh' }}>
+      <Layout style={{ height: '100%' }}>
         {/* 顶部工具栏 */}
         <Header style={{ background: '#fff', padding: '0 16px', borderBottom: '1px solid #f0f0f0' }}>
           <Toolbar />
