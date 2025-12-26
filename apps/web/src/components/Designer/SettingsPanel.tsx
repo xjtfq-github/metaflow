@@ -10,6 +10,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useDesignerStore } from '../../store/designer';
 import type { FieldDefinition } from '@metaflow/shared-types';
 import { EventPanel } from './EventPanel';
+import { DataSourceConfig } from '../DataEngine/DataSourceConfig';
 
 export const SettingsPanel: React.FC = () => {
   const { dsl, selectedId, updateComponent, deleteComponent } = useDesignerStore();
@@ -40,20 +41,24 @@ export const SettingsPanel: React.FC = () => {
   const getComponentSchema = (type: string): FieldDefinition[] => {
     const schemas: Record<string, FieldDefinition[]> = {
       Input: [
-        { name: 'placeholder', type: 'string', label: '占位符' },
-        { name: 'defaultValue', type: 'string', label: '默认值' },
-        { name: 'disabled', type: 'boolean', label: '禁用' },
+        { key: 'placeholder', type: 'string', label: '占位符' },
+        { key: 'defaultValue', type: 'string', label: '默认值' },
+        { key: 'disabled', type: 'boolean', label: '禁用' },
       ],
       Button: [
-        { name: 'text', type: 'string', label: '按钮文字', required: true },
-        { name: 'type', type: 'string', label: '类型', enum: ['default', 'primary', 'dashed'] },
+        { key: 'text', type: 'string', label: '按钮文字', required: true },
+        { key: 'type', type: 'string', label: '类型', options: [
+          { label: 'default', value: 'default' },
+          { label: 'primary', value: 'primary' },
+          { label: 'dashed', value: 'dashed' },
+        ]},
       ],
       Text: [
-        { name: 'content', type: 'string', label: '文本内容', required: true },
+        { key: 'content', type: 'string', label: '文本内容', required: true },
       ],
       Container: [
-        { name: 'padding', type: 'number', label: '内边距' },
-        { name: 'backgroundColor', type: 'string', label: '背景色' },
+        { key: 'padding', type: 'number', label: '内边距' },
+        { key: 'backgroundColor', type: 'string', label: '背景色' },
       ],
     };
     return schemas[type] || [];
@@ -96,11 +101,11 @@ export const SettingsPanel: React.FC = () => {
                     input = <Switch />;
                   } else if (field.type === 'number') {
                     input = <InputNumber style={{ width: '100%' }} />;
-                  } else if (field.enum) {
+                  } else if (field.options) {
                     input = (
                       <Select>
-                        {field.enum.map((opt) => (
-                          <Select.Option key={opt} value={opt}>{opt}</Select.Option>
+                        {field.options?.map((opt) => (
+                          <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
                         ))}
                       </Select>
                     );
@@ -110,8 +115,8 @@ export const SettingsPanel: React.FC = () => {
                   
                   return (
                     <Form.Item
-                      key={field.name}
-                      name={field.name}
+                      key={field.key}
+                      name={field.key}
                       label={field.label}
                       rules={rules}
                       valuePropName={field.type === 'boolean' ? 'checked' : 'value'}
@@ -127,6 +132,23 @@ export const SettingsPanel: React.FC = () => {
             key: 'events',
             label: '事件',
             children: <EventPanel componentId={selectedComponent.id} />,
+          },
+          {
+            key: 'data',
+            label: '数据源',
+            children: (
+              <DataSourceConfig
+                value={selectedComponent.props?.dataSource}
+                onChange={(dataSource) => {
+                  updateComponent(selectedComponent.id, { 
+                    props: { 
+                      ...selectedComponent.props, 
+                      dataSource 
+                    } 
+                  });
+                }}
+              />
+            ),
           },
           {
             key: 'style',
