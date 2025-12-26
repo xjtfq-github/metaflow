@@ -11,6 +11,9 @@ import { FaasPage } from './pages/FaasPage';
 import { PerformancePage } from './pages/PerformancePage';
 import { ObservabilityPage } from './pages/ObservabilityPage';
 import { CodegenPage } from './pages/CodegenPage';
+import { DeliveryPage } from './pages/DeliveryPage';
+import { AppManagerPage } from './pages/AppManagerPage';
+import { WorkflowPage } from './pages/WorkflowPage';
 import { CopilotAssistant } from './components/CopilotAssistant';
 import { Layout, Menu, FloatButton } from 'antd';
 import { RobotOutlined } from '@ant-design/icons';
@@ -35,7 +38,9 @@ function App() {
               style={{ flex: 1, minWidth: 0, marginLeft: 50 }}
             >
               <Menu.Item key="designer">页面设计器</Menu.Item>
+              <Menu.Item key="apps">应用管理</Menu.Item>
               <Menu.Item key="dataengine">数据引擎</Menu.Item>
+              <Menu.Item key="workflow">工作流</Menu.Item>
               <Menu.Item key="permission">权限管理</Menu.Item>
               <Menu.Item key="version">版本管理</Menu.Item>
               <Menu.Item key="eam">EAM维保</Menu.Item>
@@ -45,14 +50,19 @@ function App() {
               <Menu.Item key="performance">性能监控</Menu.Item>
               <Menu.Item key="observability">观测监控</Menu.Item>
               <Menu.Item key="codegen">代码生成</Menu.Item>
+              <Menu.Item key="delivery">整合交付</Menu.Item>
             </Menu>
           </div>
         </Header>
         <Content style={{ background: '#f5f5f5', flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
           {activePage === 'designer' ? (
             <Designer />
+          ) : activePage === 'apps' ? (
+            <AppManagerPage />
           ) : activePage === 'dataengine' ? (
             <DataEnginePage />
+          ) : activePage === 'workflow' ? (
+            <WorkflowPage />
           ) : activePage === 'permission' ? (
             <PermissionPage />
           ) : activePage === 'version' ? (
@@ -69,8 +79,10 @@ function App() {
             <PerformancePage />
           ) : activePage === 'observability' ? (
             <ObservabilityPage />
-          ) : (
+          ) : activePage === 'codegen' ? (
             <CodegenPage />
+          ) : (
+            <DeliveryPage />
           )}
         </Content>
       </Layout>

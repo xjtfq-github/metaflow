@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Patch, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateAppDto } from './dto/create-app.dto';
 import { AppResponseDto } from './dto/app-response.dto';
@@ -42,7 +42,28 @@ export class AppManagerController {
     return this.appManagerService.findOne(id);
   }
 
-  @Patch(':id/publish')
+  @Put(':id')
+  @ApiOperation({ summary: 'Update application' })
+  @ApiResponse({
+    status: 200,
+    description: 'The app has been successfully updated.',
+    type: AppResponseDto,
+  })
+  update(@Param('id') id: string, @Body() updateAppDto: CreateAppDto) {
+    return this.appManagerService.update(id, updateAppDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete application' })
+  @ApiResponse({
+    status: 200,
+    description: 'The app has been successfully deleted.',
+  })
+  delete(@Param('id') id: string) {
+    return this.appManagerService.delete(id);
+  }
+
+  @Post(':id/publish')
   @ApiOperation({ summary: 'Publish application' })
   @ApiResponse({
     status: 200,
