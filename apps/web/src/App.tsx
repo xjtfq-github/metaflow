@@ -37,22 +37,23 @@ function App() {
               selectedKeys={[activePage]}
               onClick={(e) => setActivePage(e.key)}
               style={{ flex: 1, minWidth: 0, marginLeft: 50 }}
-            >
-              <Menu.Item key="designer">页面设计器</Menu.Item>
-              <Menu.Item key="apps">应用管理</Menu.Item>
-              <Menu.Item key="dataengine">数据引擎</Menu.Item>
-              <Menu.Item key="workflow">工作流</Menu.Item>
-              <Menu.Item key="permission">权限管理</Menu.Item>
-              <Menu.Item key="version">版本管理</Menu.Item>
-              <Menu.Item key="eam">EAM维保</Menu.Item>
-              <Menu.Item key="tenant">租户管理</Menu.Item>
-              <Menu.Item key="copilot">AI助手</Menu.Item>
-              <Menu.Item key="faas">FaaS扩展</Menu.Item>
-              <Menu.Item key="performance">性能监控</Menu.Item>
-              <Menu.Item key="observability">观测监控</Menu.Item>
-              <Menu.Item key="codegen">代码生成</Menu.Item>
-              <Menu.Item key="delivery">整合交付</Menu.Item>
-            </Menu>
+              items={[
+                { key: 'designer', label: '页面设计器' },
+                { key: 'apps', label: '应用管理' },
+                { key: 'dataengine', label: '数据引擎' },
+                { key: 'workflow', label: '工作流' },
+                { key: 'permission', label: '权限管理' },
+                { key: 'version', label: '版本管理' },
+                { key: 'eam', label: 'EAM维保' },
+                { key: 'tenant', label: '租户管理' },
+                { key: 'copilot', label: 'AI助手' },
+                { key: 'faas', label: 'FaaS扩展' },
+                { key: 'performance', label: '性能监控' },
+                { key: 'observability', label: '观测监控' },
+                { key: 'codegen', label: '代码生成' },
+                { key: 'delivery', label: '整合交付' },
+              ]}
+            />
           </div>
         </Header>
         <Content style={{ background: '#f5f5f5', flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
