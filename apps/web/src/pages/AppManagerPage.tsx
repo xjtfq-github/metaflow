@@ -16,7 +16,7 @@ interface App {
   updatedAt: Date;
 }
 
-export const AppManagerPage: React.FC = () => {
+export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = ({ onDesign }) => {
   const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -193,7 +193,7 @@ export const AppManagerPage: React.FC = () => {
             type="link"
             size="small"
             icon={<EyeOutlined />}
-            onClick={() => window.open(`/designer/${record.id}`, '_blank')}
+            onClick={() => onDesign?.(record.id)}
           >
             设计
           </Button>

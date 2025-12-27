@@ -33,6 +33,9 @@ export interface DesignerActions {
   // 设置 DSL
   setDSL: (dsl: ComponentDefinition) => void;
   
+  // 加载应用
+  loadApp: (appId: string) => Promise<void>;
+  
   // 添加组件
   addComponent: (parentId: string, component: ComponentDefinition, index?: number) => void;
   
@@ -119,6 +122,21 @@ export const useDesignerStore = create<DesignerStore>()((
         set((state) => {
           state.dsl = dsl;
         }),
+
+      loadApp: async (appId) => {
+        try {
+          const response = await fetch(`/api/apps/${appId}`);
+          const data = await response.json();
+          if (data.success && data.data.dsl) {
+            set((state) => {
+              state.dsl = data.data.dsl;
+              state.selectedId = null;
+            });
+          }
+        } catch (error) {
+          console.error('加载应用配置失败:', error);
+        }
+      },
 
       addComponent: (parentId, component, index) =>
         set((state) => {
@@ -211,7 +229,7 @@ export const useDesignerStore = create<DesignerStore>()((
       equality: (a, b) => a === b,
       partialize: (state) => ({
         dsl: state.dsl,
-      }),
+      }) as any,
     }
   )
 ));

@@ -23,7 +23,8 @@ const { Header, Content } = Layout;
 
 function App() {
   const [activePage, setActivePage] = useState('designer');
-  const [copilotVisible, setCopilotVisible] = useState(false); // 'designer' or 'dataengine'
+  const [copilotVisible, setCopilotVisible] = useState(false);
+  const [currentAppId, setCurrentAppId] = useState<string | null>(null);
 
   return (
     <PermissionProvider>
@@ -56,9 +57,12 @@ function App() {
         </Header>
         <Content style={{ background: '#f5f5f5', flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
           {activePage === 'designer' ? (
-            <Designer />
+            <Designer appId={currentAppId} />
           ) : activePage === 'apps' ? (
-            <AppManagerPage />
+            <AppManagerPage onDesign={(appId) => {
+              setCurrentAppId(appId);
+              setActivePage('designer');
+            }} />
           ) : activePage === 'dataengine' ? (
             <DataEnginePage />
           ) : activePage === 'workflow' ? (

@@ -16,8 +16,15 @@ import { Toolbar } from './Toolbar';
 
 const { Header, Content, Sider } = Layout;
 
-export const Designer: React.FC = () => {
-  const { addComponent } = useDesignerStore();
+export const Designer: React.FC<{ appId?: string | null }> = ({ appId }) => {
+  const { addComponent, loadApp } = useDesignerStore();
+  
+  // 加载应用配置
+  React.useEffect(() => {
+    if (appId) {
+      loadApp(appId);
+    }
+  }, [appId, loadApp]);
   
   // 拖拽传感器
   const sensors = useSensors(
