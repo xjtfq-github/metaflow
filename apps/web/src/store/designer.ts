@@ -131,17 +131,30 @@ export const useDesignerStore = create<DesignerStore>()((
           
           // 兼容嵌套data格式
           const appData = data.data?.data || data.data;
-          const dsl = appData?.dsl;
+          let dsl = appData?.dsl;
           
-          if (dsl) {
-            set((state) => {
-              state.dsl = dsl;
-              state.selectedId = null;
-            });
-            console.log('加载应用DSL成功:', dsl);
-          } else {
-            console.warn('应用没有DSL配置');
+          // 如果没有DSL，创建默认空页面
+          if (!dsl) {
+            dsl = {
+              id: 'root',
+              type: 'Container',
+              props: {
+                style: {
+                  minHeight: '100vh',
+                  padding: '24px',
+                  background: '#f5f5f5',
+                },
+              },
+              children: [],
+            };
+            console.log('创建默认空页面');
           }
+          
+          set((state) => {
+            state.dsl = dsl;
+            state.selectedId = null;
+          });
+          console.log('加载应用DSL成功:', dsl);
         } catch (error) {
           console.error('加载应用配置失败:', error);
         }
