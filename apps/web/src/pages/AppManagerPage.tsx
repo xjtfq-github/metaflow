@@ -87,7 +87,9 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
       const data = await response.json();
       console.log('响应数据:', data);
 
-      if (data.success) {
+      // 兼容不同响应格式
+      const isSuccess = data.success !== false; // 默认成功
+      if (isSuccess) {
         message.success(editingApp ? '更新成功' : '创建成功');
         setModalVisible(false);
         loadApps();
