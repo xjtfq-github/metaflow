@@ -18,7 +18,7 @@ import {
 } from '@ant-design/icons';
 import { useDesignerStore, useUndo, useRedo, useCanUndo, useCanRedo } from '../../store/designer';
 
-export const Toolbar: React.FC = () => {
+export const Toolbar: React.FC<{ appId?: string | null }> = ({ appId }) => {
   const { dsl, isPreview, showCode, canvasMode, togglePreview, toggleCode, setCanvasMode } = useDesignerStore();
   
   const undo = useUndo();
@@ -26,12 +26,31 @@ export const Toolbar: React.FC = () => {
   const canUndo = useCanUndo();
   const canRedo = useCanRedo();
 
-  const handleSave = () => {
-    if (!dsl) return;
+  const handleSave = async () => {
+    if (!dsl || !appId) {
+      message.warning('没有可保存的内容');
+      return;
+    }
     
-    // TODO: 调用保存 API
-    console.log('保存 DSL:', dsl);
-    message.success('保存成功');
+    try {
+      const response = await fetch(`/api/apps/${appId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dsl }),
+      });
+      
+      const data = await response.json();
+      const isSuccess = data.success !== false;
+      
+      if (isSuccess) {
+        message.success('保存成功');
+      } else {
+        message.error(data.message || '保存失败');
+      }
+    } catch (error) {
+      console.error('保存错误:', error);
+      message.error('保存失败');
+    }
   };
 
   const handleExportCode = () => {
