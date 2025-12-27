@@ -24,13 +24,13 @@ export const DeliveryPage: React.FC = () => {
     {
       phase: '第二阶段：能力扩展（Day 08-14）',
       modules: [
-        { name: '页面构建器', status: 'prototype', features: '组件注册表、运行时渲染器', missing: '拖拽设计器、撤销重做' },
-        { name: '逻辑编排', status: 'prototype', features: 'EventBus原型、动作库规划', missing: '可视化逻辑设计器' },
-        { name: '工作流引擎', status: 'prototype', features: 'FSM状态机、BPMN DSL', missing: '工作流持久化' },
-        { name: '规则引擎', status: 'completed', features: '表达式解析、计算字段', missing: '复杂规则链' },
-        { name: '权限模型', status: 'basic', features: 'RBAC字段、租户隔离', missing: 'Policy DSL' },
-        { name: '版本管理', status: 'completed', features: 'Draft/Version双态', missing: '发布流水线' },
-        { name: 'EAM实战', status: 'completed', features: '设备台账、维保流程', missing: '完整数据落库' },
+        { name: '页面构建器', status: 'completed', features: 'MaterialPanel、Canvas、SettingsPanel、Toolbar、拖拽交互', missing: '高级撤销重做' },
+        { name: '逻辑编排', status: 'completed', features: 'EventBus、ActionExecutor、5种动作类型、模板插值', missing: '可视化流程图' },
+        { name: '工作流引擎', status: 'completed', features: 'WorkflowEngine、状态机、BPMN DSL、WorkflowDesigner', missing: '待办中心' },
+        { name: '规则引擎', status: 'completed', features: 'ExpressionEvaluator、DependencyGraph、计算字段', missing: '规则链' },
+        { name: '权限模型', status: 'completed', features: 'PermissionEvaluator、RBAC、租户隔离、PermissionPage', missing: 'Policy DSL' },
+        { name: '版本管理', status: 'completed', features: 'VersionManager、Draft/Publish、VersionPage', missing: '灰度发布' },
+        { name: 'EAM实战', status: 'completed', features: 'EamPage、设备台账、维保工单、巡检计划', missing: '移动端' },
       ],
     },
     {
@@ -251,7 +251,7 @@ export const DeliveryPage: React.FC = () => {
               </div>
               <div>
                 <Text>第二阶段（能力扩展）</Text>
-                <Progress percent={70} status="active" />
+                <Progress percent={100} status="success" />
               </div>
               <div>
                 <Text>第三阶段（生产级特性）</Text>
