@@ -127,11 +127,20 @@ export const useDesignerStore = create<DesignerStore>()((
         try {
           const response = await fetch(`/api/apps/${appId}`);
           const data = await response.json();
-          if (data.success && data.data.dsl) {
+          console.log('加载应用DSL响应:', data);
+          
+          // 兼容嵌套data格式
+          const appData = data.data?.data || data.data;
+          const dsl = appData?.dsl;
+          
+          if (dsl) {
             set((state) => {
-              state.dsl = data.data.dsl;
+              state.dsl = dsl;
               state.selectedId = null;
             });
+            console.log('加载应用DSL成功:', dsl);
+          } else {
+            console.warn('应用没有DSL配置');
           }
         } catch (error) {
           console.error('加载应用配置失败:', error);
