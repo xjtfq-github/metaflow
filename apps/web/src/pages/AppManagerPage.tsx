@@ -75,6 +75,15 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
       });
 
       console.log('响应状态:', response.status);
+      
+      // 处理非200响应
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log('错误响应:', errorData);
+        message.error(errorData.message || `请求失败 (${response.status})`);
+        return;
+      }
+      
       const data = await response.json();
       console.log('响应数据:', data);
 
