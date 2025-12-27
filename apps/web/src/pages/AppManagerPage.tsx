@@ -33,10 +33,13 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
     try {
       const response = await fetch('/api/apps');
       const data = await response.json();
-      if (data.success) {
-        setApps(data.data);
-      }
+      console.log('应用列表响应:', data);
+      
+      // 兼容嵌套data格式
+      const apps = data.data?.data || data.data || [];
+      setApps(apps);
     } catch (error) {
+      console.error('加载应用列表错误:', error);
       message.error('加载应用列表失败');
     } finally {
       setLoading(false);
