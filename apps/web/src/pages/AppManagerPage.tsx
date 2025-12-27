@@ -66,13 +66,17 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
       const url = editingApp ? `/api/apps/${editingApp.id}` : '/api/apps';
       const method = editingApp ? 'PUT' : 'POST';
 
+      console.log('创建应用请求:', { url, method, values });
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
 
+      console.log('响应状态:', response.status);
       const data = await response.json();
+      console.log('响应数据:', data);
 
       if (data.success) {
         message.success(editingApp ? '更新成功' : '创建成功');
@@ -82,7 +86,12 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
         message.error(data.message || '操作失败');
       }
     } catch (error) {
-      message.error('操作失败');
+      console.error('创建应用错误:', error);
+      if (error instanceof Error) {
+        message.error(`操作失败: ${error.message}`);
+      } else {
+        message.error('操作失败');
+      }
     } finally {
       setLoading(false);
     }
