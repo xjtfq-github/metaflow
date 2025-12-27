@@ -16,8 +16,9 @@ export class AppManagerController {
     description: 'The app has been successfully created.',
     type: AppResponseDto,
   })
-  create(@Body() createAppDto: CreateAppDto) {
-    return this.appManagerService.create(createAppDto);
+  async create(@Body() createAppDto: CreateAppDto) {
+    const data = await this.appManagerService.create(createAppDto);
+    return { success: true, data };
   }
 
   @Get()
@@ -27,8 +28,9 @@ export class AppManagerController {
     description: 'Return all apps.',
     type: [AppResponseDto],
   })
-  findAll() {
-    return this.appManagerService.findAll();
+  async findAll() {
+    const data = await this.appManagerService.findAll();
+    return { success: true, data };
   }
 
   @Get(':id')
@@ -38,8 +40,9 @@ export class AppManagerController {
     description: 'Return the app.',
     type: AppResponseDto,
   })
-  findOne(@Param('id') id: string) {
-    return this.appManagerService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const data = await this.appManagerService.findOne(id);
+    return { success: true, data };
   }
 
   @Put(':id')
@@ -49,8 +52,9 @@ export class AppManagerController {
     description: 'The app has been successfully updated.',
     type: AppResponseDto,
   })
-  update(@Param('id') id: string, @Body() updateAppDto: CreateAppDto) {
-    return this.appManagerService.update(id, updateAppDto);
+  async update(@Param('id') id: string, @Body() updateAppDto: CreateAppDto) {
+    const data = await this.appManagerService.update(id, updateAppDto);
+    return { success: true, data };
   }
 
   @Delete(':id')
@@ -59,8 +63,9 @@ export class AppManagerController {
     status: 200,
     description: 'The app has been successfully deleted.',
   })
-  delete(@Param('id') id: string) {
-    return this.appManagerService.delete(id);
+  async delete(@Param('id') id: string) {
+    const data = await this.appManagerService.delete(id);
+    return data;
   }
 
   @Post(':id/publish')
@@ -70,7 +75,8 @@ export class AppManagerController {
     description: 'The app has been published.',
     type: AppResponseDto,
   })
-  publish(@Param('id') id: string) {
-    return this.appManagerService.publish(id);
+  async publish(@Param('id') id: string) {
+    const data = await this.appManagerService.publish(id);
+    return { success: true, data };
   }
 }
