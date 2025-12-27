@@ -29,7 +29,7 @@ import { ObservabilityController } from './common/observability.controller';
     OrganizationModule,
     EamModule,
     TenantModule,
-    FaasModule,
+    // FaasModule, // 临时禁用，isolated-vm编译问题
     CodegenModule,
   ],
   controllers: [AppController, CacheController, PerformanceController, ObservabilityController],

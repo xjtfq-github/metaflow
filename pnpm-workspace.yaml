@@ -1,3 +1,16 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - apps/*
+  - packages/*
+
+ignoredBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@scarf/scarf'
+  - better-sqlite3
+  - esbuild
+  - isolated-vm
+  - msw
+  - prisma
+  - protobufjs
+  - unrs-resolver
