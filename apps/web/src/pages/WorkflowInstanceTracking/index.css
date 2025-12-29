@@ -1,0 +1,21 @@
+.workflow-instance-tracking {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.workflow-instance-tracking .ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.workflow-instance-tracking .ant-descriptions {
+  margin-bottom: 24px;
+}
+
+.workflow-instance-tracking .ant-tabs {
+  background: #fff;
+}
+
+.workflow-instance-tracking .react-flow {
+  background: #fafafa;
+}

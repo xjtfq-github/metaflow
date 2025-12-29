@@ -23,10 +23,20 @@ export class TransformInterceptor<T> implements NestInterceptor<
   ): Observable<Response<T>> {
     return next.handle().pipe(
       map(
-        (data: T): Response<T> => ({
-          data,
-          timestamp: new Date().toISOString(),
-        }),
+        (data: T): Response<T> => {
+          // 如果返回的数据已经包含 success 字段，保留它
+          if (data && typeof data === 'object' && 'success' in data) {
+            return {
+              ...data,
+              timestamp: new Date().toISOString(),
+            } as any;
+          }
+          // 否则按原样包装
+          return {
+            data,
+            timestamp: new Date().toISOString(),
+          };
+        },
       ),
     );
   }

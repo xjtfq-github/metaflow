@@ -24,7 +24,8 @@ export const Designer: React.FC<{ appId?: string | null }> = ({ appId }) => {
     if (appId) {
       loadApp(appId);
     }
-  }, [appId, loadApp]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appId]); // 只依赖appId，避免重复加载
   
   // 拖拽传感器
   const sensors = useSensors(
@@ -79,14 +80,8 @@ export const Designer: React.FC<{ appId?: string | null }> = ({ appId }) => {
       },
       DatePicker: { placeholder: '选择日期' },
       Table: {
-        columns: [
-          { title: '姓名', dataIndex: 'name' },
-          { title: '年龄', dataIndex: 'age' },
-        ],
-        dataSource: [
-          { name: '张三', age: 28 },
-          { name: '李四', age: 32 },
-        ]
+        columns: [], // 空数组，由数据源配置自动生成
+        dataSource: { autoLoad: false }, // 默认不自动加载，需要配置数据源
       },
       Image: { src: 'https://via.placeholder.com/150', alt: '图片' },
     };

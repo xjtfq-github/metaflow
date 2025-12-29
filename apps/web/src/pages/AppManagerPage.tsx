@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Button, Modal, Form, Input, Select, Tag, Space, message, Popconfirm } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, RocketOutlined, EyeOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, RocketOutlined, EyeOutlined, PlayCircleOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -120,8 +120,10 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
       });
 
       const data = await response.json();
-
-      if (data.success) {
+      
+      // 兼容响应格式
+      const isSuccess = data.success !== false;
+      if (isSuccess) {
         message.success('删除成功');
         loadApps();
       } else {
@@ -143,8 +145,10 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
       });
 
       const data = await response.json();
-
-      if (data.success) {
+      
+      // 兼容响应格式：判断success字段，默认成功
+      const isSuccess = data.success !== false;
+      if (isSuccess) {
         message.success('发布成功');
         loadApps();
       } else {
@@ -209,7 +213,7 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
     {
       title: '操作',
       key: 'action',
-      width: 250,
+      width: 300,
       render: (_: any, record: App) => (
         <Space>
           <Button
@@ -220,6 +224,19 @@ export const AppManagerPage: React.FC<{ onDesign?: (appId: string) => void }> = 
           >
             设计
           </Button>
+          {record.status === 'published' && (
+            <Button
+              type="link"
+              size="small"
+              icon={<PlayCircleOutlined />}
+              onClick={() => {
+                const previewUrl = `${window.location.origin}?page=preview&appId=${record.id}`;
+                window.open(previewUrl, '_blank');
+              }}
+            >
+              预览
+            </Button>
+          )}
           <Button
             type="link"
             size="small"

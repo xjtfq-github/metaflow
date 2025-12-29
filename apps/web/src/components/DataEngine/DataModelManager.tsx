@@ -19,6 +19,7 @@ export const DataModelManager: React.FC<DataModelManagerProps> = ({ onModelSelec
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingModel, setEditingModel] = useState<ModelDSL | null>(null);
+  const [currentFields, setCurrentFields] = useState<FieldDefinition[]>([]);
   const [form] = Form.useForm();
 
   // 模拟加载数据模型
@@ -29,49 +30,35 @@ export const DataModelManager: React.FC<DataModelManagerProps> = ({ onModelSelec
   const loadModels = async () => {
     setLoading(true);
     try {
-      // 模拟API调用
-      const response = await fetch('/api/schema/models');
-      if (response.ok) {
-        const data = await response.json();
-        setModels(data);
+      const response = await fetch('/api/schema');
+      const data = await response.json();
+      console.log('加载模型响应:', data);
+      
+      const schemaList = data.data?.data || data.data || [];
+      console.log('schema列表:', schemaList);
+      
+      // 确保是数组并映射字段
+      if (Array.isArray(schemaList)) {
+        const mappedModels = schemaList.map((s: any) => ({
+          id: s.id || s.name,
+          entityName: s.name || s.entityName || s.id,
+          displayName: s.label || s.displayName || s.name,
+          description: s.description || '',
+          fields: s.fields || [],
+          version: s.version || '1.0.0',
+          timestamps: s.timestamps ?? true,
+          relations: s.relations || [],
+        }));
+        console.log('映射后的模型列表:', mappedModels);
+        setModels(mappedModels);
       } else {
-        // 模拟数据
-        setModels([
-          {
-            id: 'user',
-            entityName: 'user',
-            displayName: '用户表',
-            description: '系统用户信息',
-            fields: [
-              { key: 'id', type: 'string', required: true, label: 'ID' },
-              { key: 'name', type: 'string', required: true, label: '姓名' },
-              { key: 'email', type: 'string', required: true, label: '邮箱' },
-              { key: 'age', type: 'number', required: false, label: '年龄' },
-            ],
-            version: '1.0.0',
-            relations: [],
-            timestamps: true,
-          },
-          {
-            id: 'order',
-            entityName: 'order',
-            displayName: '订单表',
-            description: '订单信息',
-            fields: [
-              { key: 'id', type: 'string', required: true, label: 'ID' },
-              { key: 'userId', type: 'string', required: true, label: '用户ID' },
-              { key: 'amount', type: 'number', required: true, label: '金额' },
-              { key: 'status', type: 'string', required: true, label: '状态' },
-            ],
-            version: '1.0.0',
-            relations: [],
-            timestamps: true,
-          },
-        ]);
+        console.error('模型数据不是数组:', schemaList);
+        setModels([]);
       }
     } catch (error) {
       console.error('加载数据模型失败:', error);
       message.error('加载数据模型失败');
+      setModels([]);
     } finally {
       setLoading(false);
     }
@@ -79,24 +66,25 @@ export const DataModelManager: React.FC<DataModelManagerProps> = ({ onModelSelec
 
   const handleCreateModel = () => {
     setEditingModel(null);
+    setCurrentFields([{ key: 'id', label: 'ID', type: 'string', required: true }]);
     form.resetFields();
     setIsModalVisible(true);
   };
 
   const handleEditModel = (model: ModelDSL) => {
     setEditingModel(model);
+    setCurrentFields(model.fields || []);
     form.setFieldsValue({
       id: model.id,
       displayName: model.displayName,
       description: model.description,
-      fields: model.fields,
     });
     setIsModalVisible(true);
   };
 
   const handleDeleteModel = async (modelId: string) => {
     try {
-      const response = await fetch(`/api/schema/models/${modelId}`, {
+      const response = await fetch(`/api/schema/${modelId}`, {
         method: 'DELETE',
       });
       
@@ -114,21 +102,26 @@ export const DataModelManager: React.FC<DataModelManagerProps> = ({ onModelSelec
 
   const handleSaveModel = async (values: any) => {
     try {
+      console.log('表单提交值:', values);
+      console.log('当前字段:', currentFields);
+      
       const modelData: ModelDSL = {
         id: values.id,
         displayName: values.displayName,
         description: values.description,
         entityName: values.id,
-        fields: values.fields || [],
+        fields: currentFields,
         version: '1.0.0',
         timestamps: true,
         relations: [],
 
       };
+      
+      console.log('准备保存的模型数据:', modelData);
 
       if (editingModel) {
         // 更新现有模型
-        const response = await fetch(`/api/schema/models/${editingModel.id}`, {
+        const response = await fetch(`/api/schema/${editingModel.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(modelData),
@@ -142,7 +135,7 @@ export const DataModelManager: React.FC<DataModelManagerProps> = ({ onModelSelec
         }
       } else {
         // 创建新模型
-        const response = await fetch('/api/schema/models', {
+        const response = await fetch('/api/schema', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(modelData),
@@ -278,7 +271,10 @@ export const DataModelManager: React.FC<DataModelManagerProps> = ({ onModelSelec
           </Form.Item>
 
           <Form.Item label="字段配置">
-            <FieldConfigForm />
+            <FieldConfigForm 
+              initialFields={currentFields} 
+              onChange={setCurrentFields}
+            />
           </Form.Item>
 
           <Form.Item>
@@ -300,8 +296,11 @@ export const DataModelManager: React.FC<DataModelManagerProps> = ({ onModelSelec
 /**
  * 字段配置表单组件
  */
-const FieldConfigForm: React.FC = () => {
-  const [fields, setFields] = useState<FieldDefinition[]>([
+const FieldConfigForm: React.FC<{ 
+  initialFields?: FieldDefinition[];
+  onChange?: (fields: FieldDefinition[]) => void;
+}> = ({ initialFields, onChange }) => {
+  const [fields, setFields] = useState<FieldDefinition[]>(initialFields || [
     { key: 'id', label: 'ID', type: 'string', required: true }
   ]);
   const [newField, setNewField] = useState<Omit<FieldDefinition, 'id'>>({ 
@@ -310,6 +309,11 @@ const FieldConfigForm: React.FC = () => {
     type: 'string', 
     required: false 
   });
+
+  // 字段变化时通知父组件
+  React.useEffect(() => {
+    onChange?.(fields);
+  }, [fields, onChange]);
 
   const addField = () => {
     if (!newField.key) {

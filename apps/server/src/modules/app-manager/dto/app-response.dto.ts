@@ -24,4 +24,7 @@ export class AppResponseDto {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty({ required: false })
+  dsl?: any;
 }

@@ -1,0 +1,14 @@
+.workflow-instance-list {
+  height: 100%;
+  padding: 24px;
+}
+
+.workflow-instance-list .ant-card {
+  height: 100%;
+}
+
+.workflow-instance-list .filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}

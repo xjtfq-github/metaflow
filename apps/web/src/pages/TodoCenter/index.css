@@ -1,0 +1,23 @@
+.todo-center {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.todo-center .filter-bar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.todo-center .ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.todo-center .ant-table-wrapper {
+  background: #fff;
+}
+
+.todo-center .ant-tag {
+  margin-left: 8px;
+}

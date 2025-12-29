@@ -1,0 +1,23 @@
+.task-detail {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: 100vh;
+}
+
+.task-detail .ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-detail .ant-descriptions {
+  margin-bottom: 24px;
+}
+
+.task-detail .ant-divider {
+  margin: 24px 0;
+}
+
+.task-detail h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}

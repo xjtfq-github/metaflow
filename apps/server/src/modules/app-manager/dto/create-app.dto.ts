@@ -20,4 +20,10 @@ export class CreateAppDto {
     required: false,
   })
   icon?: string;
+
+  @ApiProperty({
+    description: 'Page DSL configuration in JSON format',
+    required: false,
+  })
+  dsl?: any;
 }

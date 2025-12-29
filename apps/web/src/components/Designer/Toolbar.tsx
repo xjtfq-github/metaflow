@@ -4,7 +4,7 @@
  * 撤销/重做、预览、保存、源码模式
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button, Space, Radio, message } from 'antd';
 import {
   UndoOutlined,
@@ -15,11 +15,13 @@ import {
   DesktopOutlined,
   TabletOutlined,
   MobileOutlined,
+  ImportOutlined,
 } from '@ant-design/icons';
 import { useDesignerStore, useUndo, useRedo, useCanUndo, useCanRedo } from '../../store/designer';
 
 export const Toolbar: React.FC<{ appId?: string | null }> = ({ appId }) => {
-  const { dsl, isPreview, showCode, canvasMode, togglePreview, toggleCode, setCanvasMode } = useDesignerStore();
+  const { dsl, isPreview, showCode, canvasMode, togglePreview, toggleCode, setCanvasMode, setDSL } = useDesignerStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const undo = useUndo();
   const redo = useRedo();
@@ -67,6 +69,32 @@ export const Toolbar: React.FC<{ appId?: string | null }> = ({ appId }) => {
     message.success('导出成功');
   };
 
+  const handleImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const imported = JSON.parse(content);
+        setDSL(imported);
+        message.success('导入成功');
+      } catch (error) {
+        console.error('导入错误:', error);
+        message.error('导入失败，文件格式不正确');
+      }
+    };
+    reader.readAsText(file);
+    
+    // 重置 input，允许重复导入同一文件
+    e.target.value = '';
+  };
+
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
       <Space>
@@ -108,6 +136,18 @@ export const Toolbar: React.FC<{ appId?: string | null }> = ({ appId }) => {
         <Button icon={<CodeOutlined />} onClick={toggleCode}>
           {showCode ? '隐藏源码' : '查看源码'}
         </Button>
+
+        {/* 导入 */}
+        <Button icon={<ImportOutlined />} onClick={handleImport}>
+          导入
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
 
         {/* 导出 */}
         <Button onClick={handleExportCode}>导出</Button>

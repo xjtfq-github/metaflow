@@ -7,8 +7,26 @@
 import React, { useEffect } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { useDesignerStore } from '../../store/designer';
-import { Renderer, registry } from '@metaflow/client';
+import { registry } from '@metaflow/client/src/registry';
+import { Container } from '@metaflow/client/src/components/Container';
+import { Grid } from '@metaflow/client/src/components/Grid';
+import { Text } from '@metaflow/client/src/components/Text';
+import { Table } from '@metaflow/client/src/components/Table';
+import { Button } from '@metaflow/client/src/components/Button';
+import { Input } from '@metaflow/client/src/components/Input';
+import { Select } from '@metaflow/client/src/components/Select';
+import { DatePicker } from '@metaflow/client/src/components/DatePicker';
 import type { ComponentDefinition } from '@metaflow/shared-types';
+
+// 注册核心组件
+registry.register('Container', Container);
+registry.register('Grid', Grid);
+registry.register('Text', Text);
+registry.register('Table', Table);
+registry.register('Button', Button);
+registry.register('Input', Input);
+registry.register('Select', Select);
+registry.register('DatePicker', DatePicker);
 
 /**
  * 画布尺寸配置
@@ -57,7 +75,7 @@ export const Canvas: React.FC = () => {
     >
       {isPreview ? (
         // 预览模式: 纯渲染
-        <Renderer component={dsl} />
+        <EditableCanvas component={dsl} selectedId={null} onSelect={() => {}} />
       ) : (
         // 编辑模式: 可选中
         <EditableCanvas component={dsl} selectedId={selectedId} onSelect={selectComponent} />

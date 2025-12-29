@@ -182,6 +182,7 @@ exports.Prisma.AppScalarFieldEnum = {
   name: 'name',
   description: 'description',
   icon: 'icon',
+  dsl: 'dsl',
   status: 'status',
   tenantId: 'tenantId',
   createdBy: 'createdBy',
@@ -397,6 +398,98 @@ exports.Prisma.ConnectorScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DataModelScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  entityName: 'entityName',
+  displayName: 'displayName',
+  description: 'description',
+  fields: 'fields',
+  version: 'version',
+  timestamps: 'timestamps',
+  status: 'status',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DynamicRecordScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  modelId: 'modelId',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkflowScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  nodes: 'nodes',
+  edges: 'edges',
+  version: 'version',
+  status: 'status',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkflowInstanceScalarFieldEnum = {
+  id: 'id',
+  workflowId: 'workflowId',
+  tenantId: 'tenantId',
+  status: 'status',
+  currentNodeIds: 'currentNodeIds',
+  variables: 'variables',
+  context: 'context',
+  initiator: 'initiator',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt',
+  errorMessage: 'errorMessage'
+};
+
+exports.Prisma.TaskInstanceScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  instanceId: 'instanceId',
+  nodeId: 'nodeId',
+  nodeName: 'nodeName',
+  nodeType: 'nodeType',
+  assignee: 'assignee',
+  status: 'status',
+  formData: 'formData',
+  dueDate: 'dueDate',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt',
+  completedBy: 'completedBy',
+  comment: 'comment'
+};
+
+exports.Prisma.WorkflowTokenScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  instanceId: 'instanceId',
+  nodeId: 'nodeId',
+  parentTokenId: 'parentTokenId',
+  status: 'status',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt'
+};
+
+exports.Prisma.WorkflowLogScalarFieldEnum = {
+  id: 'id',
+  instanceId: 'instanceId',
+  level: 'level',
+  message: 'message',
+  nodeId: 'nodeId',
+  taskId: 'taskId',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -428,7 +521,14 @@ exports.Prisma.ModelName = {
   ScriptExecution: 'ScriptExecution',
   Webhook: 'Webhook',
   WebhookRequest: 'WebhookRequest',
-  Connector: 'Connector'
+  Connector: 'Connector',
+  DataModel: 'DataModel',
+  DynamicRecord: 'DynamicRecord',
+  Workflow: 'Workflow',
+  WorkflowInstance: 'WorkflowInstance',
+  TaskInstance: 'TaskInstance',
+  WorkflowToken: 'WorkflowToken',
+  WorkflowLog: 'WorkflowLog'
 };
 
 /**

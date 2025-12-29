@@ -10,7 +10,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useDesignerStore } from '../../store/designer';
 import type { FieldDefinition } from '@metaflow/shared-types';
 import { EventPanel } from './EventPanel';
-import { DataSourceConfig } from '../DataEngine/DataSourceConfig';
+import { DataSourcePanel } from './DataSourcePanel';
 
 export const SettingsPanel: React.FC = () => {
   const { dsl, selectedId, updateComponent, deleteComponent } = useDesignerStore();
@@ -65,6 +65,9 @@ export const SettingsPanel: React.FC = () => {
   };
 
   const fields = getComponentSchema(selectedComponent.type);
+
+  // 需要数据源的组件类型
+  const needsDataSource = ['Table', 'Select', 'List'].includes(selectedComponent.type);
 
   return (
     <div style={{ padding: 16 }}>
@@ -133,11 +136,11 @@ export const SettingsPanel: React.FC = () => {
             label: '事件',
             children: <EventPanel componentId={selectedComponent.id} />,
           },
-          {
+          ...(needsDataSource ? [{
             key: 'data',
             label: '数据源',
             children: (
-              <DataSourceConfig
+              <DataSourcePanel
                 value={selectedComponent.props?.dataSource}
                 onChange={(dataSource) => {
                   updateComponent(selectedComponent.id, { 
@@ -149,7 +152,7 @@ export const SettingsPanel: React.FC = () => {
                 }}
               />
             ),
-          },
+          }] : []),
           {
             key: 'style',
             label: '样式',

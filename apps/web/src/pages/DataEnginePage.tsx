@@ -7,10 +7,10 @@
 import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
 import type { MenuProps } from 'antd';
-import { DatabaseOutlined, TableOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
 import { DataModelManager } from '../components/DataEngine/DataModelManager';
 import { DataRecordManager } from '../components/DataEngine/DataRecordManager';
-import { DataSourceConfig } from '../components/DataEngine/DataSourceConfig';
+import type { ModelDSL } from '@metaflow/shared-types';
 
 const { Content, Sider } = Layout;
 
@@ -33,14 +33,22 @@ function getItem(
 const items: MenuItem[] = [
   getItem('数据模型管理', 'models', <DatabaseOutlined />),
   getItem('数据记录管理', 'records', <TableOutlined />),
-  getItem('数据源配置', 'datasource', <AppstoreOutlined />),
 ];
 
 export const DataEnginePage: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState('models');
+  const [selectedModel, setSelectedModel] = useState<ModelDSL | null>(null);
 
   const onMenuClick = (e: { key: string }) => {
     setSelectedKey(e.key);
+    if (e.key !== 'records') {
+      setSelectedModel(null);
+    }
+  };
+
+  const handleModelSelect = (model: ModelDSL) => {
+    setSelectedModel(model);
+    setSelectedKey('records');
   };
 
   return (
@@ -71,10 +79,21 @@ export const DataEnginePage: React.FC = () => {
           overflow: 'auto',
         }}
       >
-        <div style={{ background: '#fff', padding: 24, borderRadius: 4, minHeight: '100%' }}>
-          {selectedKey === 'models' && <DataModelManager />}
-          {selectedKey === 'records' && <div>请选择一个数据模型来管理记录</div>}
-          {selectedKey === 'datasource' && <DataSourceConfig />}
+       <div style={{ background: '#fff', padding: 24, borderRadius: 4, minHeight: '100%' }}>
+          {selectedKey === 'models' && <DataModelManager onModelSelect={handleModelSelect} />}
+          {selectedKey === 'records' && (
+            selectedModel ? (
+              <DataRecordManager 
+                model={selectedModel} 
+                onBack={() => {
+                  setSelectedModel(null);
+                  setSelectedKey('models');
+                }} 
+              />
+            ) : (
+              <div>请从数据模型管理中点击"查看数据"来管理记录</div>
+            )
+          )}
         </div>
       </Content>
     </Layout>

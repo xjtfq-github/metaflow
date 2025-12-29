@@ -12,6 +12,7 @@ export const Select: React.FC<ComponentProps> = ({ element }) => {
       { label: '选项1', value: '1' },
       { label: '选项2', value: '2' },
     ],
+    dataSource,
     ...otherProps 
   } = element.props || {};
   

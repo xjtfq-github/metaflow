@@ -6,11 +6,27 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': {
+      '/api/apps': {
         target: 'http://localhost:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
-      }
+      },
+      '/api/schema': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/api/data': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/api/workflows': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/api/tasks': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     }
   }
 })

@@ -11,16 +11,19 @@ export const Table: React.FC<ComponentProps> = ({ element }) => {
       { title: '列1', dataIndex: 'col1', key: 'col1' },
       { title: '列2', dataIndex: 'col2', key: 'col2' },
     ],
-    dataSource = [
-      { key: '1', col1: '数据1', col2: '数据2' },
-    ],
+    dataSource,
     ...otherProps 
   } = element.props || {};
+  
+  // 如果dataSource是数据源配置对象，使用默认空数组
+  const actualDataSource = Array.isArray(dataSource) 
+    ? dataSource 
+    : [{ key: '1', col1: '配置数据源后显示实际数据', col2: '-' }];
   
   return (
     <AntTable 
       columns={columns} 
-      dataSource={dataSource} 
+      dataSource={actualDataSource} 
       {...otherProps} 
       style={element.style}
     />

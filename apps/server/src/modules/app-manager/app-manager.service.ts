@@ -40,6 +40,7 @@ export class AppManagerService {
       tenantId: app.tenantId,
       createdAt: app.createdAt,
       updatedAt: app.updatedAt,
+      dsl: app.dsl ? (typeof app.dsl === 'string' ? JSON.parse(app.dsl) : app.dsl) : undefined,
     };
   }
 
@@ -61,6 +62,7 @@ export class AppManagerService {
       tenantId: app.tenantId,
       createdAt: app.createdAt,
       updatedAt: app.updatedAt,
+      dsl: app.dsl ? (typeof app.dsl === 'string' ? JSON.parse(app.dsl) : app.dsl) : undefined,
     }));
   }
 
@@ -82,6 +84,7 @@ export class AppManagerService {
       tenantId: app.tenantId,
       createdAt: app.createdAt,
       updatedAt: app.updatedAt,
+      dsl: app.dsl ? (typeof app.dsl === 'string' ? JSON.parse(app.dsl) : app.dsl) : undefined,
     };
   }
 
@@ -125,6 +128,7 @@ export class AppManagerService {
       tenantId: updated.tenantId,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
+      dsl: updated.dsl ? (typeof updated.dsl === 'string' ? JSON.parse(updated.dsl) : updated.dsl) : undefined,
     };
   }
 
@@ -139,13 +143,21 @@ export class AppManagerService {
       throw new ConflictException(`App with id "${id}" not found`);
     }
 
+    // 构建更新数据，只更新提供的字段
+    const updateData: any = {};
+    if (updateAppDto.name !== undefined) updateData.name = updateAppDto.name;
+    if (updateAppDto.description !== undefined) updateData.description = updateAppDto.description;
+    if (updateAppDto.icon !== undefined) updateData.icon = updateAppDto.icon;
+    if (updateAppDto.dsl !== undefined) {
+      // 如果dsl是对象，转换为JSON字符串
+      updateData.dsl = typeof updateAppDto.dsl === 'string' 
+        ? updateAppDto.dsl 
+        : JSON.stringify(updateAppDto.dsl);
+    }
+
     const updated = await this.prisma.app.update({
       where: { id },
-      data: {
-        name: updateAppDto.name,
-        description: updateAppDto.description,
-        icon: updateAppDto.icon,
-      },
+      data: updateData,
     });
 
     return {
@@ -157,6 +169,7 @@ export class AppManagerService {
       tenantId: updated.tenantId,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
+      dsl: updated.dsl ? (typeof updated.dsl === 'string' ? JSON.parse(updated.dsl) : updated.dsl) : undefined,
     };
   }
 

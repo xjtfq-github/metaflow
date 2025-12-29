@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Button, Modal, Form, Input, Select, Tag, Space, message, Popconfirm, Descriptions, Timeline } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, PlayCircleOutlined, PauseCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, PlayCircleOutlined, PauseCircleOutlined, FormOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -32,15 +32,18 @@ interface WorkflowInstance {
   completedAt?: Date;
 }
 
-export const WorkflowPage: React.FC = () => {
+export const WorkflowPage: React.FC<{ onDesign?: (workflowId: string) => void }> = ({ onDesign }) => {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [instances, setInstances] = useState<WorkflowInstance[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [startModalVisible, setStartModalVisible] = useState(false);
+  const [startingWorkflow, setStartingWorkflow] = useState<Workflow | null>(null);
   const [instanceModalVisible, setInstanceModalVisible] = useState(false);
   const [editingWorkflow, setEditingWorkflow] = useState<Workflow | null>(null);
   const [selectedInstance, setSelectedInstance] = useState<WorkflowInstance | null>(null);
   const [form] = Form.useForm();
+  const [startForm] = Form.useForm();
   const [activeTab, setActiveTab] = useState<'definition' | 'instance'>('definition');
 
   useEffect(() => {
@@ -75,12 +78,19 @@ export const WorkflowPage: React.FC = () => {
     }
   };
 
+  // 设计工作流
+  const handleDesign = (workflowId: string) => {
+    if (onDesign) {
+      onDesign(workflowId);
+    }
+  };
+
   // 创建工作流
   const handleCreate = () => {
     setEditingWorkflow(null);
     form.resetFields();
     form.setFieldsValue({
-      status: 'draft',
+      status: 'active',
       nodes: [],
     });
     setModalVisible(true);
@@ -96,11 +106,14 @@ export const WorkflowPage: React.FC = () => {
   // 保存工作流
   const handleSave = async () => {
     try {
+      console.log('开始保存工作流...');
       const values = await form.validateFields();
+      console.log('表单验证通过，提交数据:', values);
       setLoading(true);
 
       const url = editingWorkflow ? `/api/workflows/${editingWorkflow.id}` : '/api/workflows';
       const method = editingWorkflow ? 'PUT' : 'POST';
+      console.log(`发起请求: ${method} ${url}`);
 
       const response = await fetch(url, {
         method,
@@ -108,17 +121,21 @@ export const WorkflowPage: React.FC = () => {
         body: JSON.stringify(values),
       });
 
+      console.log('响应状态:', response.status, response.statusText);
       const data = await response.json();
+      console.log('响应数据:', data);
 
       if (data.success) {
         message.success(editingWorkflow ? '更新成功' : '创建成功');
         setModalVisible(false);
         loadWorkflows();
       } else {
+        console.error('业务失败:', data);
         message.error(data.message || '操作失败');
       }
     } catch (error) {
-      message.error('操作失败');
+      console.error('保存工作流错误:', error);
+      message.error('操作失败：' + (error instanceof Error ? error.message : '未知错误'));
     } finally {
       setLoading(false);
     }
@@ -148,23 +165,43 @@ export const WorkflowPage: React.FC = () => {
   };
 
   // 启动工作流
-  const handleStart = async (id: string) => {
-    setLoading(true);
+  const handleStart = async (workflow: Workflow) => {
+    setStartingWorkflow(workflow);
+    startForm.resetFields();
+    setStartModalVisible(true);
+  };
+
+  // 提交启动表单
+  const handleSubmitStart = async () => {
     try {
-      const response = await fetch(`/api/workflows/${id}/start`, {
+      const values = await startForm.validateFields();
+      setLoading(true);
+
+      const response = await fetch(`/api/workflows/${startingWorkflow?.id}/start`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: values.title || `${startingWorkflow?.name} - ${new Date().toLocaleDateString()}`,
+          variables: values.variables || {},
+          initiator: 'user-1', // 实际应用中从用户上下文获取
+        }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        message.success('工作流已启动');
+        message.success('流程启动成功');
+        setStartModalVisible(false);
         loadInstances();
+        setActiveTab('instance'); // 自动切换到实例列表
       } else {
         message.error(data.message || '启动失败');
       }
     } catch (error) {
       message.error('启动失败');
+      console.error('启动流程失败:', error);
     } finally {
       setLoading(false);
     }
@@ -233,8 +270,16 @@ export const WorkflowPage: React.FC = () => {
           <Button
             type="link"
             size="small"
+            icon={<FormOutlined />}
+            onClick={() => handleDesign(record.id)}
+          >
+            设计
+          </Button>
+          <Button
+            type="link"
+            size="small"
             icon={<PlayCircleOutlined />}
-            onClick={() => handleStart(record.id)}
+            onClick={() => handleStart(record)}
             disabled={record.status !== 'active'}
           >
             启动
@@ -400,7 +445,8 @@ export const WorkflowPage: React.FC = () => {
           <Form.Item
             label="状态"
             name="status"
-            initialValue="draft"
+            initialValue="active"
+            rules={[{ required: true, message: '请选择状态' }]}
           >
             <Select>
               <Option value="draft">草稿</Option>
@@ -409,12 +455,49 @@ export const WorkflowPage: React.FC = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item label="提示">
+          <div style={{ marginBottom: 16 }}>
             <div style={{ padding: 12, background: '#f0f2f5', borderRadius: 4 }}>
-              <p>💡 工作流节点设计功能正在开发中</p>
-              <p>当前可以创建基础工作流定义，后续将提供可视化流程设计器</p>
+              <p style={{ margin: 0, marginBottom: 8 }}>💡 工作流节点设计功能正在开发中</p>
+              <p style={{ margin: 0 }}>当前可以创建基础工作流定义，后续将提供可视化流程设计器</p>
             </div>
+          </div>
+        </Form>
+      </Modal>
+
+      {/* 启动流程模态框 */}
+      <Modal
+        title={`启动流程：${startingWorkflow?.name}`}
+        open={startModalVisible}
+        onOk={handleSubmitStart}
+        onCancel={() => setStartModalVisible(false)}
+        width={600}
+        confirmLoading={loading}
+        okText="启动"
+        cancelText="取消"
+      >
+        <Form form={startForm} layout="vertical">
+          <Form.Item
+            label="实例标题"
+            name="title"
+            rules={[{ required: true, message: '请输入实例标题' }]}
+            initialValue={`${startingWorkflow?.name} - ${new Date().toLocaleDateString()}`}
+          >
+            <Input placeholder="为本次流程实例起一个标题" />
           </Form.Item>
+
+          <Form.Item
+            label="流程描述"
+            name="description"
+          >
+            <TextArea rows={3} placeholder="可选：简要说明本次流程的背景或目的" />
+          </Form.Item>
+
+          <div style={{ marginTop: 16 }}>
+            <div style={{ padding: 12, background: '#f0f2f5', borderRadius: 4 }}>
+              <p style={{ margin: 0 }}>💡 流程变量配置功能开发中</p>
+              <p style={{ margin: 0, fontSize: 12, color: '#666' }}>后续将支持在启动时配置流程变量</p>
+            </div>
+          </div>
         </Form>
       </Modal>
 
